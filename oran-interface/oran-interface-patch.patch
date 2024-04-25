@@ -1,0 +1,369 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..f5bee20
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,48 @@
++include_directories(/usr/local/include/e2sim)
++link_directories(/usr/local/lib)
++link_libraries(e2sim)
++
++find_external_library(
++    DEPENDENCY_NAME e2sim
++    HEADER_NAMES e2sim.hpp
++    LIBRARY_NAME e2sim
++    SEARCH_PATHS /usr/local/include/
++)
++
++if(${e2sim_FOUND})
++    include_directories(${e2sim_INCLUDE_DIRS})
++    link_libraries(${e2sim_LIBRARIES})
++endif()
++
++build_lib(
++    LIBNAME oran-interface
++    SOURCE_FILES
++        model/oran-interface.cc
++        model/asn1c-types.cc
++        model/function-description.cc
++        model/kpm-indication.cc
++        model/kpm-function-description.cc
++        model/ric-control-message.cc
++        model/ric-control-function-description.cc
++        helper/oran-interface-helper.cc
++        helper/indication-message-helper.cc
++        helper/lte-indication-message-helper.cc
++        helper/mmwave-indication-message-helper.cc
++    HEADER_FILES
++        model/oran-interface.h
++        model/asn1c-types.h
++        model/function-description.h
++        model/kpm-indication.h
++        model/kpm-function-description.h
++        model/ric-control-message.h
++        model/ric-control-function-description.h
++        helper/oran-interface-helper.h
++        helper/indication-message-helper.h
++        helper/lte-indication-message-helper.h
++        helper/mmwave-indication-message-helper.h
++    LIBRARIES_TO_LINK 
++        ${libcore}
++        ${e2sim_LIBRARIES}
++    TEST_SOURCES
++        test/oran-interface-test-suite.cc
++)
+\ No newline at end of file
+diff --git a/examples/CMakeLists.txt b/examples/CMakeLists.txt
+new file mode 100644
+index 0000000..7e460de
+--- /dev/null
++++ b/examples/CMakeLists.txt
+@@ -0,0 +1,20 @@
++set(base_examples
++    e2sim-integration-example
++    oran-interface-example
++    ric-indication-messages
++    ric-control-function-desc
++    l3-rrc-example
++    test-wrappers
++)
++
++foreach(
++  example
++  ${base_examples}
++)
++  build_lib_example(
++    NAME ${example}
++    SOURCE_FILES ${example}.cc
++    LIBRARIES_TO_LINK
++      ${liboran-interface}
++  )
++endforeach()
+\ No newline at end of file
+diff --git a/model/asn1c-types.h b/model/asn1c-types.h
+index 83464db..16246f2 100644
+--- a/model/asn1c-types.h
++++ b/model/asn1c-types.h
+@@ -29,29 +29,29 @@
+ #include <ns3/math.h>
+ 
+ extern "C" {
+-  #include "OCTET_STRING.h"
+-  #include "BIT_STRING.h"
+-  #include "PM-Info-Item.h"
+-  #include "SNSSAI.h"
+-  #include "RRCEvent.h"
+-  #include "L3-RRC-Measurements.h"
+-  #include "ServingCellMeasurements.h"
+-  #include "MeasResultNeighCells.h"
+-  #include "MeasResultNR.h"
+-  #include "MeasResultEUTRA.h"
+-  #include "MeasResultPCell.h"
+-  #include "MeasResultListEUTRA.h"
+-  #include "MeasResultListNR.h"
+-  #include "MeasResultServMO.h"
+-  #include "MeasResultServMOList.h"
+-  #include "MeasQuantityResults.h"
+-  #include "ResultsPerSSB-Index.h"
+-  #include "ResultsPerCSI-RS-Index.h"
+-  #include "E2SM-RC-ControlMessage-Format1.h"
+-  #include "RANParameter-Item.h"
+-  #include "RANParameter-ValueType.h"
+-  #include "RANParameter-ELEMENT.h"
+-  #include "RANParameter-STRUCTURE.h"
++  #include "e2sim/OCTET_STRING.h"
++  #include "e2sim/BIT_STRING.h"
++  #include "e2sim/PM-Info-Item.h"
++  #include "e2sim/SNSSAI.h"
++  #include "e2sim/RRCEvent.h"
++  #include "e2sim/L3-RRC-Measurements.h"
++  #include "e2sim/ServingCellMeasurements.h"
++  #include "e2sim/MeasResultNeighCells.h"
++  #include "e2sim/MeasResultNR.h"
++  #include "e2sim/MeasResultEUTRA.h"
++  #include "e2sim/MeasResultPCell.h"
++  #include "e2sim/MeasResultListEUTRA.h"
++  #include "e2sim/MeasResultListNR.h"
++  #include "e2sim/MeasResultServMO.h"
++  #include "e2sim/MeasResultServMOList.h"
++  #include "e2sim/MeasQuantityResults.h"
++  #include "e2sim/ResultsPerSSB-Index.h"
++  #include "e2sim/ResultsPerCSI-RS-Index.h"
++  #include "e2sim/E2SM-RC-ControlMessage-Format1.h"
++  #include "e2sim/RANParameter-Item.h"
++  #include "e2sim/RANParameter-ValueType.h"
++  #include "e2sim/RANParameter-ELEMENT.h"
++  #include "e2sim/RANParameter-STRUCTURE.h"
+ }
+ 
+ namespace ns3 {
+diff --git a/model/kpm-function-description.cc b/model/kpm-function-description.cc
+index b318503..526094e 100644
+--- a/model/kpm-function-description.cc
++++ b/model/kpm-function-description.cc
+@@ -27,8 +27,8 @@
+ #include <ns3/log.h>
+ 
+ extern "C" {
+-#include "RIC-EventTriggerStyle-Item.h"
+-#include "RIC-ReportStyle-Item.h"
++#include "e2sim/RIC-EventTriggerStyle-Item.h"
++#include "e2sim/RIC-ReportStyle-Item.h"
+ }
+ 
+ namespace ns3 {
+diff --git a/model/kpm-function-description.h b/model/kpm-function-description.h
+index 2cbb101..48fb565 100644
+--- a/model/kpm-function-description.h
++++ b/model/kpm-function-description.h
+@@ -29,13 +29,13 @@
+ #include <ns3/function-description.h>
+ 
+ extern "C" {
+-  #include "E2SM-KPM-RANfunction-Description.h"
+-  #include "E2SM-KPM-IndicationHeader.h"
+-  #include "E2SM-KPM-IndicationMessage.h"
+-  #include "RAN-Container.h"
+-  #include "PF-Container.h"
+-  #include "OCUUP-PF-Container.h"
+-  #include "PF-ContainerListItem.h"
++  #include "e2sim/E2SM-KPM-RANfunction-Description.h"
++  #include "e2sim/E2SM-KPM-IndicationHeader.h"
++  #include "e2sim/E2SM-KPM-IndicationMessage.h"
++  #include "e2sim/RAN-Container.h"
++  #include "e2sim/PF-Container.h"
++  #include "e2sim/OCUUP-PF-Container.h"
++  #include "e2sim/PF-ContainerListItem.h"
+   #include "asn1c-types.h"
+ }
+ 
+diff --git a/model/kpm-indication.cc b/model/kpm-indication.cc
+index ae237e0..9144860 100644
+--- a/model/kpm-indication.cc
++++ b/model/kpm-indication.cc
+@@ -27,30 +27,30 @@
+ #include <ns3/log.h>
+ 
+ extern "C" {
+-#include "E2SM-KPM-IndicationHeader-Format1.h"
+-#include "E2SM-KPM-IndicationMessage-Format1.h"
+-#include "GlobalE2node-ID.h"
+-#include "GlobalE2node-gNB-ID.h"
+-#include "GlobalE2node-eNB-ID.h"
+-#include "GlobalE2node-ng-eNB-ID.h"
+-#include "GlobalE2node-en-gNB-ID.h"
+-#include "NRCGI.h"
+-#include "PM-Containers-Item.h"
+-#include "RIC-EventTriggerStyle-Item.h"
+-#include "RIC-ReportStyle-Item.h"
+-#include "TimeStamp.h"
+-#include "CUUPMeasurement-Container.h"
+-#include "PlmnID-Item.h"
+-#include "EPC-CUUP-PM-Format.h"
+-#include "PerQCIReportListItemFormat.h"
+-#include "PerUE-PM-Item.h"
+-#include "PM-Info-Item.h"
+-#include "MeasurementInfoList.h"
+-#include "CellObjectID.h"
+-#include "CellResourceReportListItem.h"
+-#include "ServedPlmnPerCellListItem.h"
+-#include "EPC-DU-PM-Container.h"
+-#include "PerQCIReportListItem.h"
++#include "e2sim/E2SM-KPM-IndicationHeader-Format1.h"
++#include "e2sim/E2SM-KPM-IndicationMessage-Format1.h"
++#include "e2sim/GlobalE2node-ID.h"
++#include "e2sim/GlobalE2node-gNB-ID.h"
++#include "e2sim/GlobalE2node-eNB-ID.h"
++#include "e2sim/GlobalE2node-ng-eNB-ID.h"
++#include "e2sim/GlobalE2node-en-gNB-ID.h"
++#include "e2sim/NRCGI.h"
++#include "e2sim/PM-Containers-Item.h"
++#include "e2sim/RIC-EventTriggerStyle-Item.h"
++#include "e2sim/RIC-ReportStyle-Item.h"
++#include "e2sim/TimeStamp.h"
++#include "e2sim/CUUPMeasurement-Container.h"
++#include "e2sim/PlmnID-Item.h"
++#include "e2sim/EPC-CUUP-PM-Format.h"
++#include "e2sim/PerQCIReportListItemFormat.h"
++#include "e2sim/PerUE-PM-Item.h"
++#include "e2sim/PM-Info-Item.h"
++#include "e2sim/MeasurementInfoList.h"
++#include "e2sim/CellObjectID.h"
++#include "e2sim/CellResourceReportListItem.h"
++#include "e2sim/ServedPlmnPerCellListItem.h"
++#include "e2sim/EPC-DU-PM-Container.h"
++#include "e2sim/PerQCIReportListItem.h"
+ }
+ 
+ namespace ns3 {
+@@ -499,7 +499,7 @@ MeasurementItemList::GetItems ()
+ OCTET_STRING_t
+ MeasurementItemList::GetId ()
+ {
+-  NS_ABORT_IF (m_id == NULL);
++  NS_ABORT_IF (!m_id);
+   return m_id->GetValue ();
+ }
+ 
+diff --git a/model/kpm-indication.h b/model/kpm-indication.h
+index 7121ef0..41ef1ad 100644
+--- a/model/kpm-indication.h
++++ b/model/kpm-indication.h
+@@ -29,15 +29,15 @@
+ #include <set>
+ 
+ extern "C" {
+-  #include "E2SM-KPM-RANfunction-Description.h"
+-  #include "E2SM-KPM-IndicationHeader.h"
+-  #include "E2SM-KPM-IndicationMessage.h"
+-  #include "RAN-Container.h"
+-  #include "PF-Container.h"
+-  #include "OCUUP-PF-Container.h"
+-  #include "OCUCP-PF-Container.h"
+-  #include "ODU-PF-Container.h"
+-  #include "PF-ContainerListItem.h"
++  #include "e2sim/E2SM-KPM-RANfunction-Description.h"
++  #include "e2sim/E2SM-KPM-IndicationHeader.h"
++  #include "e2sim/E2SM-KPM-IndicationMessage.h"
++  #include "e2sim/RAN-Container.h"
++  #include "e2sim/PF-Container.h"
++  #include "e2sim/OCUUP-PF-Container.h"
++  #include "e2sim/OCUCP-PF-Container.h"
++  #include "e2sim/ODU-PF-Container.h"
++  #include "e2sim/PF-ContainerListItem.h"
+   #include "asn1c-types.h"
+ }
+ 
+diff --git a/model/oran-interface.cc b/model/oran-interface.cc
+index 4baf123..4ac363c 100644
+--- a/model/oran-interface.cc
++++ b/model/oran-interface.cc
+@@ -30,10 +30,10 @@
+ #include "encode_e2apv1.hpp"
+ 
+ extern "C" {
+-  #include "RICsubscriptionRequest.h"
+-  #include "RICactionType.h"
+-  #include "ProtocolIE-Field.h"
+-  #include "InitiatingMessage.h"
++  #include "e2sim/RICsubscriptionRequest.h"
++  #include "e2sim/RICactionType.h"
++  #include "e2sim/ProtocolIE-Field.h"
++  #include "e2sim/InitiatingMessage.h"
+ }
+ 
+ namespace ns3 {
+diff --git a/model/oran-interface.h b/model/oran-interface.h
+index 87a82d7..1ae9754 100644
+--- a/model/oran-interface.h
++++ b/model/oran-interface.h
+@@ -30,7 +30,7 @@
+ #include <ns3/kpm-function-description.h>
+ #include <ns3/ric-control-function-description.h>
+ #include <ns3/ric-control-message.h>
+-#include "e2sim.hpp"
++#include "e2sim/e2sim.hpp"
+ 
+ namespace ns3 {
+   
+diff --git a/model/ric-control-function-description.cc b/model/ric-control-function-description.cc
+index 6bfea1c..294a6cd 100644
+--- a/model/ric-control-function-description.cc
++++ b/model/ric-control-function-description.cc
+@@ -27,9 +27,9 @@
+ #include <ns3/log.h>
+ 
+ extern "C" {  
+-  #include "RIC-ControlStyle-Item.h"
+-  #include "RIC-ControlAction-Item.h"
+-  #include "RAN-ControlParameter-Item.h"
++  #include "e2sim/RIC-ControlStyle-Item.h"
++  #include "e2sim/RIC-ControlAction-Item.h"
++  #include "e2sim/RAN-ControlParameter-Item.h"
+ }
+ 
+ namespace ns3 {
+diff --git a/model/ric-control-function-description.h b/model/ric-control-function-description.h
+index 08c9516..3d1f651 100644
+--- a/model/ric-control-function-description.h
++++ b/model/ric-control-function-description.h
+@@ -29,7 +29,7 @@
+ #include "ns3/object.h"
+ 
+ extern "C" {
+-  #include "E2SM-RC-RANFunctionDefinition.h"
++  #include "e2sim/E2SM-RC-RANFunctionDefinition.h"
+ }
+ 
+ namespace ns3 {
+diff --git a/model/ric-control-message.h b/model/ric-control-message.h
+index a4836aa..71923d2 100644
+--- a/model/ric-control-message.h
++++ b/model/ric-control-message.h
+@@ -29,16 +29,16 @@
+ #include <ns3/asn1c-types.h>
+ 
+ extern "C" {
+-  #include "E2AP-PDU.h"
+-  #include "E2SM-RC-ControlHeader.h"
+-  #include "E2SM-RC-ControlMessage.h"
+-  #include "E2SM-RC-ControlHeader-Format1.h"
+-  #include "E2SM-RC-ControlMessage-Format1.h"
+-  #include "RICcontrolRequest.h"
+-  #include "ProtocolIE-Field.h"
+-  #include "InitiatingMessage.h"
+-  #include "CellGlobalID.h"
+-  #include "NRCGI.h"
++  #include "e2sim/E2AP-PDU.h"
++  #include "e2sim/E2SM-RC-ControlHeader.h"
++  #include "e2sim/E2SM-RC-ControlMessage.h"
++  #include "e2sim/E2SM-RC-ControlHeader-Format1.h"
++  #include "e2sim/E2SM-RC-ControlMessage-Format1.h"
++  #include "e2sim/RICcontrolRequest.h"
++  #include "e2sim/ProtocolIE-Field.h"
++  #include "e2sim/InitiatingMessage.h"
++  #include "e2sim/CellGlobalID.h"
++  #include "e2sim/NRCGI.h"
+  }
+ 
+ namespace ns3 {
