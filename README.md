@@ -32,6 +32,8 @@ cd colosseum-near-rt-ric/setup-scripts
 ```
 docker ps
 docker logs e2term -f --since=1s 2>&1 | grep gnb:
+```
+```
 cd colosseum-near-rt-ric/setup-scripts
 ./start-xapp-ns-o-ran.sh
 ```
