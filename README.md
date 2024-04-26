@@ -32,15 +32,16 @@ cd colosseum-near-rt-ric/setup-scripts
 ```
 docker ps
 docker logs e2term -f --since=1s 2>&1 | grep gnb:
-```
+```  
+&nbsp;&nbsp;In a different terminal window/tab, run the following commands.
 ```
 cd colosseum-near-rt-ric/setup-scripts
 ./start-xapp-ns-o-ran.sh
 ```
 
 
-4. Run xApp logic in the container.
-
+4. Run xApp logic in the container.  
+(You may need to do this step after running the scenario-zero example in ns3.)
 ```
 cd /home/sample-xapp
 ./run_xapp.sh
