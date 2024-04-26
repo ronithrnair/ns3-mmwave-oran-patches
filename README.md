@@ -47,39 +47,71 @@ cd /home/sample-xapp
 
 ### ns-O-RAN Setup
 
+#### Quick Setup
+1. Run the script file build_ns3_components.sh
+```
+./build_ns3_components.sh
+```
+The script performs all the steps listed in the manual installation
+
+#### Manual Setup
+
 1. Install prerequisites for ns-O-RAN and ns-3 in Ubuntu 20.04 LTS.
 ```
 sudo apt-get update
 sudo apt-get install -y build-essential git cmake libsctp-dev autoconf automake libtool bison flex libboost-all-dev g++ python3
 ```
 
-2. Clone and install e2Sim software.
+2. Clone the patch repository
+
+```
+git clone https://github.com/ronithrnair/ns3-mmwave-oran-patches
+```
+
+
+3. Clone, apply patch, and install e2Sim software.
 
 ```
 git clone https://github.com/wineslab/ns-o-ran-e2-sim oran-e2sim
-cd oran-e2sim/e2sim/
+cd oran-e2sim
+```
+```
+git apply --ignore-space-change --ignore-whitespace ./ns3-mmwave-oran-patches/oran-e2sim/oran-e2sim-patch.patch
+```
+```
+cd e2sim/
 mkdir build
 ./build_e2sim.sh 3
+cd ../..
 ```
 
 
-3. Clone and install ns3-mmWave project.
+4. Clone and apply patch to ns3 project for the latest supported commit.
 
 ```
-git clone https://github.com/wineslab/ns-o-ran-ns3-mmwave ns-3-mmwave-oran
-cd ns-3-mmwave-oran
+git clone https://github.com/nsnam/ns-3-dev-git.git
+cd ns-3-dev-git
+git checkout 3e98de188d7b5d5a53b04efb28ee60bac4db4cc5
 ```
-4. Clone and integrate ns-O-RAN module into ns3-mmWave project.
+```
+git apply --ignore-space-change --ignore-whitespace ../ns3-mmwave-oran-patches/mmwave/mmwave-patch.patch
+```
+5. Clone and integrate ns-O-RAN module into ns3-mmWave project.
 
 ```
-cd ns-3-mmwave-oran/contrib
+cd contrib
 git clone -b master https://github.com/o-ran-sc/sim-ns3-o-ran-e2 oran-interface
-cd ..
+cd oran-interface
+```
+```
+git apply --ignore-space-change --ignore-whitespace ../../../ns3-mmwave-oran-patches/oran-interface/oran-interface-patch.patch
 ```
 
 
-5. Configure and build ns-3.
+6. Configure and build ns-3.
 ```
+cd ../..
+./ns3 clean
 ./ns3 configure --enable-examples --enable-tests
 ./ns3 build
 ```
