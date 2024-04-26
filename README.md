@@ -48,8 +48,16 @@ cd /home/sample-xapp
 ### ns-O-RAN Setup
 
 #### Quick Setup
-1. Run the script file build_ns3_components.sh
+
+1. Clone the patch repository
+
 ```
+git clone https://github.com/ronithrnair/ns3-mmwave-oran-patches
+```
+
+2. Run the setup script
+```
+cd ns3-mmwave-oran-patches
 ./build_ns3_components.sh
 ```
 The script performs all the steps listed in the manual installation
@@ -76,7 +84,7 @@ git clone https://github.com/wineslab/ns-o-ran-e2-sim oran-e2sim
 cd oran-e2sim
 ```
 ```
-git apply --ignore-space-change --ignore-whitespace ./ns3-mmwave-oran-patches/oran-e2sim/oran-e2sim-patch.patch
+git apply --ignore-space-change --ignore-whitespace ../ns3-mmwave-oran-patches/oran-e2sim/oran-e2sim-patch.patch
 ```
 ```
 cd e2sim/
